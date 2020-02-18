@@ -13,6 +13,13 @@ char wait_time = 0;
 long speed_gage = 0;
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//														  //
+//			モーターが発進した時start_initに入るためここで数値を固定するためにA/D変換の数値を切るべき	   //
+//														  //
+//														  //
+//														  //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void start_init(long data, char flg)		//start fixed sequence
 {
 	
@@ -73,22 +80,24 @@ void motor_on(void)
 
 void motor_con(long data,char start_flg)
 {
-	
+////////////////////////////////////////////////////////////	
 	if((start_flg == TRUE) &&(845>= data))
 	{
 		start_init(data,start_flg);
 	}
-	
+////////////////////////////////////////////////////////////  この間のA/D変換データを切る。	
 	else
 	{
-		if(data >= BRAKE)
+		if(data <= BRAKE)
 		{
 			if (count == 625)wait_time++;
-			if (wait_time == 10)start_flg = FALSE;
+			if (wait_time == 4)start_flg = FALSE;　 //４秒間何も数値が更新されないとフラグを立つ。
 		}
 	}
 	
 	ustart(OCR1B, 'S');
+	
+
 }
 /*input = PINC;
 input &=0xF0;
